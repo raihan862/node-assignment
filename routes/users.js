@@ -30,6 +30,7 @@ router.post("/create-user", (req, res) => {
 });
 
 router.patch("/update-user", (req, res) => {
+  const id = req.body.id;
   const name = req.body.name;
   const email = req.body.email;
   const password = req.body.password;
@@ -41,7 +42,7 @@ router.patch("/update-user", (req, res) => {
     role,
   };
   console.log(updateData);
-  Users.findOneAndUpdate({ name: name }, updateData, {
+  Users.findByIdAndUpdate(id, updateData, {
     upsert: true,
   })
     .then((data) => {

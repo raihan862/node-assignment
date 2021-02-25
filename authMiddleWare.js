@@ -15,11 +15,23 @@ const AuthenticateToken = (req, res, next) => {
 
 const AuthenticateAdminRole = (req, res, next) => {
   console.log("role", req.user.role);
-  if (req.user.role == "admin") {
+  if (req.user.role == "admin" || req.user.role == "super") {
+    next();
+  } else {
+    res.status(403).send("Do not Have Access");
+  }
+};
+const AuthenticateSuperAdminRole = (req, res, next) => {
+  // console.log("role", req.user.role);
+  if (req.user.role == "super") {
     next();
   } else {
     res.status(403).send("Do not Have Access");
   }
 };
 
-module.exports = { AuthenticateToken, AuthenticateAdminRole };
+module.exports = {
+  AuthenticateToken,
+  AuthenticateAdminRole,
+  AuthenticateSuperAdminRole,
+};

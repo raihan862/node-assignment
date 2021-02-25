@@ -10,6 +10,10 @@ router.post("/login", (req, res) => {
   console.log(name, password);
   Users.findOne({ name: name, password: password })
     .then((user) => {
+      if (user == null) {
+        res.status(401).send("Incorrect Username or Password");
+      }
+      console.log();
       // console.log(user[0]);
       const token = generateToken(user);
       // console.log(token);
