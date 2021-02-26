@@ -7,26 +7,26 @@ const {
 } = require("../authMiddleWare");
 router.use(express.json());
 
-router.get("/", AuthenticateToken, AuthenticateAdminRole, (req, res) => {
-  console.log("come");
+// All Products List, Open For All
+
+router.get("/", AuthenticateToken, (req, res) => {
   Products.find()
     .then((data) => res.json(data))
     .catch((err) => res.json(err));
 });
 
-router.post("/add-product", (req, res) => {
-  const name = req.body.name;
-  const price = req.body.price;
-  const quantity = req.body.quantity;
-  const newProducts = new Products({
-    name,
-    price,
-    quantity,
-  });
+//Add Products, Admin And Super Admin Can Access
 
-  newProducts
-    .save()
-    .then((data) => res.json(data))
-    .catch((err) => res.json(err));
-});
+router.post(
+  "/add-product",
+  AuthenticateToken,
+  AuthenticateAdminRole,
+  (req, res) => {
+    const newProducts = new Products(req.body);
+    newProducts
+      .save()
+      .then((data) => res.json(data))
+      .catch((err) => res.json(err));
+  }
+);
 module.exports = router;

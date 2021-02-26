@@ -14,8 +14,12 @@ const orderSchema = new Schema({
     required: true,
   },
   date: {
-    type: Date,
-    default: Date.now(),
+    type: String,
+    default: new Date().toLocaleDateString(),
+  },
+  time: {
+    type: String,
+    default: new Date().toLocaleTimeString(),
   },
   status: {
     type: String,

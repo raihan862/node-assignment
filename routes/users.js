@@ -4,66 +4,62 @@ const Users = require("../Schemas/userSchema");
 const {
   AuthenticateToken,
   AuthenticateAdminRole,
+  AuthenticateSuperAdminRole,
 } = require("../authMiddleWare");
 router.use(express.json());
 
-router.get("/", AuthenticateToken, AuthenticateAdminRole, (req, res) => {
+// Users List, Only Super Admin Can access
+
+router.get("/", AuthenticateToken, AuthenticateSuperAdminRole, (req, res) => {
   Users.find()
     .then((data) => res.json(data))
     .catch((err) => res.json(err.message));
 });
+
+//Creating User, Public access
+
 router.post("/create-user", (req, res) => {
-  const name = req.body.name;
-  const email = req.body.email;
-  const password = req.body.password;
-  const role = req.body.role;
-  const newUser = new Users({
-    name,
-    email,
-    password,
-    role,
-  });
+  const newUser = new Users(req.body);
   newUser
     .save()
     .then((data) => res.json(data))
     .catch((err) => res.send());
 });
 
-router.patch("/update-user", (req, res) => {
+// Update User info, Only the super admin and
+// the User themselve can access
+
+router.patch("/update-user", AuthenticateToken, (req, res) => {
   const id = req.body.id;
-  const name = req.body.name;
-  const email = req.body.email;
-  const password = req.body.password;
-  const role = req.body.role;
-  const updateData = {
-    name,
-    email,
-    password,
-    role,
-  };
-  console.log(updateData);
-  Users.findByIdAndUpdate(id, updateData, {
-    upsert: true,
-  })
-    .then((data) => {
-      res.status(200).send("Successfully Update");
+  if (id == req.user._id || req.user.role == "super") {
+    Users.findByIdAndUpdate(id, req.body, {
+      upsert: true,
     })
-    .catch((err) => res.send(err.message));
-  // (err, data) => {
-  //   if (err) {
-  //     res.send(err.message);
-  //   }
-  //   res.status(200).send("Successfully Updated");
+      .then((data) => {
+        res.status(200).send("Successfully Update");
+      })
+      .catch((err) => res.send(err.message));
+  } else {
+    res.status(403).send("You Do Not Have Permission");
+  }
 });
-router.delete("/delete-user/:userId", (req, res) => {
+
+// Delete User, Only the super admin and
+// the User themselve can access
+
+router.delete("/delete-user/:userId", AuthenticateToken, (req, res) => {
   const id = req.params.userId;
-  Users.findByIdAndDelete(id, (err, user) => {
-    if (err) {
-      res.send("User Not Found");
-    } else {
-      res.send("delete" + user);
-    }
-  });
+  if (id == req.user._id || req.user.role == "super") {
+    Users.findByIdAndDelete(id, (err, user) => {
+      if (err) {
+        res.send("User Not Found");
+      } else {
+        res.send("delete" + user);
+      }
+    });
+  } else {
+    res.status(403).send("You Do Not Have Permission");
+  }
 });
 
 module.exports = router;

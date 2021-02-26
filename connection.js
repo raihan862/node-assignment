@@ -1,6 +1,7 @@
+/*
+This module contain the Connection Configuration
+*/
 const mongoose = require("mongoose");
-
-// Connection
 mongoose
   .connect("mongodb://localhost:27017/MyShop", {
     useNewUrlParser: true,
@@ -18,5 +19,4 @@ db.on("error", (err) => {
 db.once("open", () => {
   console.log("Database connection Stablished");
 });
-// const connectedMongoose = mongoose;
 module.exports = mongoose;
