@@ -13,20 +13,30 @@ router.use(express.json());
 
 // All Orders, only Super Admin Can Access
 
-router.get("/", AuthenticateToken, AuthenticateSuperAdminRole, (req, res) => {
-  Orders.find({})
-    .then((data) => res.json(data))
-    .catch((err) => res.send(err.message));
-});
+router.get(
+  "/",
+  AuthenticateToken,
+  AuthenticateSuperAdminRole,
+  async (req, res) => {
+    try {
+      const response = await Orders.find({});
+      res.status(200).json(response);
+    } catch (err) {
+      res.status(500).send(err.message);
+    }
+  }
+);
 
 // Make a new Order, Anyone can access after Login
 
-router.post("/make-order", AuthenticateToken, (req, res) => {
-  const newOrder = new Orders(req.body);
-  newOrder
-    .save()
-    .then((data) => res.json(data))
-    .catch((err) => res.send(err.message));
+router.post("/make-order", AuthenticateToken, async (req, res) => {
+  try {
+    const newOrder = new Orders(req.body);
+    const response = await newOrder.save();
+    res.status(200).json(response);
+  } catch (err) {
+    res.status(500).send(err.message);
+  }
 });
 
 // Updating Order Status, Admin and Super Admin Can access
@@ -35,10 +45,19 @@ router.patch(
   "/update-status",
   AuthenticateToken,
   AuthenticateAdminRole,
-  (req, res) => {
-    Orders.findByIdAndUpdate(req.body.id, { status: req.body.status })
-      .then((data) => res.status(200).send("Successfully updated order"))
-      .catch((err) => res.send(err.message));
+  async (req, res) => {
+    try {
+      const response = await Orders.findByIdAndUpdate(req.body.id, {
+        status: req.body.status,
+      });
+
+      if (response == null) {
+        res.status(204).send("No Match Id");
+      }
+      res.status(200).send("Successfully updated order");
+    } catch (err) {
+      res.status(500).send(err.message);
+    }
   }
 );
 
@@ -48,10 +67,13 @@ router.get(
   "/pending-orders",
   AuthenticateToken,
   AuthenticateAdminRole,
-  (req, res) => {
-    Orders.find({ status: "pending" })
-      .then((data) => res.json(data))
-      .catch((err) => res.send(err.message));
+  async (req, res) => {
+    try {
+      const response = await Orders.find({ status: "pending" });
+      res.status(200).json(response);
+    } catch (err) {
+      res.status(500).send(err.message);
+    }
   }
 );
 
@@ -61,10 +83,13 @@ router.get(
   "/daily-orders",
   AuthenticateToken,
   AuthenticateSuperAdminRole,
-  (req, res) => {
-    Orders.find({ date: req.body.date })
-      .then((data) => res.json(data))
-      .catch((err) => res.send(err.message));
+  async (req, res) => {
+    try {
+      const response = await Orders.find({ date: req.body.date });
+      res.status(200).json(response);
+    } catch (err) {
+      res.status(500).send(err.message);
+    }
   }
 );
 

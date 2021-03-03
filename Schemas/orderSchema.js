@@ -20,10 +20,12 @@ const orderSchema = new Schema({
   time: {
     type: String,
     default: new Date().toLocaleTimeString(),
+    index: true,
   },
   status: {
     type: String,
     required: true,
+    index: true,
   },
 });
 

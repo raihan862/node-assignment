@@ -2,17 +2,21 @@
 This module contain the Connection Configuration
 */
 const mongoose = require("mongoose");
+// mongoose.set("useFindAndModify", false);
+
 mongoose
-  .connect("mongodb://localhost:27017/MyShop", {
+  .connect(process.env.CONNECTION_STRING, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
     useCreateIndex: true,
+    useFindAndModify: false,
   })
   .catch((err) => {
-    console.log("form mongo error" + err);
+    console.log(err.message);
   });
 
 const db = mongoose.connection;
+
 db.on("error", (err) => {
   console.log(err);
 });
