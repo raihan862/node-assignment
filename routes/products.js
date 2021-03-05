@@ -44,7 +44,7 @@ router.get(
   AuthenticateSuperAdminRole,
   async (req, res) => {
     try {
-      const response = await axios.get("https://fakestoreapi.com/products");
+      const response = await axios.get(process.env.PRODUCT_URL);
       const products = await Products.insertMany(response.data);
 
       res.status(200).send(products);

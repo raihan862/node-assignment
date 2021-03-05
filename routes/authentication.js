@@ -8,10 +8,9 @@ router.use(express.json());
 //Login Endpoint
 
 router.post("/login", async (req, res) => {
-  const name = req.body.name;
-  const password = req.body.password;
-
   try {
+    const name = req.body.name;
+    const password = req.body.password;
     const response = await Users.findOne({ name: name, password: password });
     if (response == null) {
       res.status(401).send("Incorrect Username or Password");

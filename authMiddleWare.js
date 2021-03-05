@@ -39,8 +39,20 @@ const AuthenticateSuperAdminRole = (req, res, next) => {
   }
 };
 
+// this middleware is for checking if the user themselve want to
+// update/delete their own profile or the login user is an super user
+
+const AuthenticateSuperOrUser = (req, res, next) => {
+  const id = res.params?.id || req.body.id;
+  if (id == req.user._id || req.user.role == "super") {
+    next();
+  } else {
+    res.status(403).send("You Do Not Have Permission");
+  }
+};
 module.exports = {
   AuthenticateToken,
   AuthenticateAdminRole,
   AuthenticateSuperAdminRole,
+  AuthenticateSuperOrUser,
 };

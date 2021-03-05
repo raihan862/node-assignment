@@ -5,6 +5,7 @@ const {
   AuthenticateToken,
   AuthenticateAdminRole,
   AuthenticateSuperAdminRole,
+  AuthenticateSuperOrUser,
 } = require("../authMiddleWare");
 router.use(express.json());
 
@@ -39,10 +40,13 @@ router.post("/create-user", async (req, res) => {
 // Update User info, Only the super admin and
 // the User themselve can access
 
-router.patch("/update-user", AuthenticateToken, async (req, res) => {
-  const id = req.body.id;
-  if (id == req.user._id || req.user.role == "super") {
+router.patch(
+  "/update-user",
+  AuthenticateToken,
+  AuthenticateSuperOrUser,
+  async (req, res) => {
     try {
+      const id = req.body.id;
       const response = await Users.findByIdAndUpdate(id, req.body, {
         upsert: true,
       });
@@ -50,27 +54,26 @@ router.patch("/update-user", AuthenticateToken, async (req, res) => {
     } catch (err) {
       res.status(500).send(err.message);
     }
-  } else {
-    res.status(403).send("You Do Not Have Permission");
   }
-});
+);
 
 // Delete User, Only the super admin and
 // the User themselve can access
 
-router.delete("/delete-user/:userId", AuthenticateToken, async (req, res) => {
-  const id = req.params.userId;
-  if (id == req.user._id || req.user.role == "super") {
+router.delete(
+  "/delete-user/:userId",
+  AuthenticateToken,
+  AuthenticateSuperOrUser,
+  async (req, res) => {
     try {
+      const id = req.params.userId;
       const response = await Users.findByIdAndDelete(id);
       if (response == null) res.status(200).send("User Does Not Exist");
       res.status(200).send("deleted user" + response);
     } catch (err) {
       res.status(500).send(err.message);
     }
-  } else {
-    res.status(403).send("You Do Not Have Permission");
   }
-});
+);
 
 module.exports = router;
