@@ -6,7 +6,9 @@ const {
   AuthenticateAdminRole,
   AuthenticateSuperAdminRole,
   AuthenticateSuperOrUser,
+  GetPagginations,
 } = require("../authMiddleWare");
+const { log } = require("debug");
 router.use(express.json());
 
 // Users List, Only Super Admin Can access
@@ -15,10 +17,13 @@ router.get(
   "/",
   AuthenticateToken,
   AuthenticateSuperAdminRole,
+  GetPagginations,
   async (req, res) => {
     try {
-      const response = await Users.find();
-      res.status(200).json(response);
+      const off = req.offset;
+      const response = await Users.paginate({}, { offset: off, limit: 9 });
+      const response2 = await Users.count();
+      res.status(200).json({ data: response.docs, count: response2 });
     } catch (err) {
       res.status(500).send(err.message);
     }
@@ -46,10 +51,18 @@ router.patch(
   AuthenticateSuperOrUser,
   async (req, res) => {
     try {
-      const id = req.body.id;
-      const response = await Users.findByIdAndUpdate(id, req.body, {
+      const id = req.body._id;
+      const newData = {
+        name: req.body.name,
+        email: req.body.email,
+        password: req.body.password,
+        role: req.body.role,
+      };
+      const response = await Users.findByIdAndUpdate(id, newData, {
         upsert: true,
       });
+      console.log("response", response);
+
       res.status(200).send(response);
     } catch (err) {
       res.status(500).send(err.message);
@@ -69,7 +82,7 @@ router.delete(
       const id = req.params.userId;
       const response = await Users.findByIdAndDelete(id);
       if (response == null) res.status(200).send("User Does Not Exist");
-      res.status(200).send("deleted user" + response);
+      res.status(200).send(response);
     } catch (err) {
       res.status(500).send(err.message);
     }

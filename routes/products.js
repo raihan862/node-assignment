@@ -6,16 +6,20 @@ const {
   AuthenticateToken,
   AuthenticateAdminRole,
   AuthenticateSuperAdminRole,
+  GetPagginations,
 } = require("../authMiddleWare");
 const { route } = require("./users");
 router.use(express.json());
 
 // All Products List, Open For All
 
-router.get("/", AuthenticateToken, async (req, res) => {
+router.get("/", GetPagginations, async (req, res) => {
   try {
-    const response = await Products.find();
-    res.status(200).json(response);
+    const off = req.offset;
+    const response = await Products.paginate({}, { offset: off, limit: 9 });
+    const response2 = await Products.count();
+
+    res.status(200).json({ data: response.docs, count: response2 });
   } catch (err) {
     res.status(500).send(err.message);
   }

@@ -3,7 +3,6 @@ This module contain the Connection Configuration
 */
 const mongoose = require("mongoose");
 // mongoose.set("useFindAndModify", false);
-
 mongoose
   .connect(process.env.CONNECTION_STRING, {
     useNewUrlParser: true,
