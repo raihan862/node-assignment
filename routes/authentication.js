@@ -5,7 +5,7 @@ const jwt = require("jsonwebtoken");
 require("dotenv").config();
 router.use(express.json());
 
-//Login Endpoint
+//Login Endpoint  
 
 router.post("/login", async (req, res) => {
   try {

@@ -55,13 +55,11 @@ router.patch(
       const newData = {
         name: req.body.name,
         email: req.body.email,
-        password: req.body.password,
         role: req.body.role,
       };
       const response = await Users.findByIdAndUpdate(id, newData, {
         upsert: true,
       });
-      console.log("response", response);
 
       res.status(200).send(response);
     } catch (err) {

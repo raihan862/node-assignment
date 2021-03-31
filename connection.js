@@ -10,16 +10,10 @@ mongoose
     useCreateIndex: true,
     useFindAndModify: false,
   })
-  .catch((err) => {
-    console.log(err.message);
-  });
+  .catch((err) => {});
 
 const db = mongoose.connection;
 
-db.on("error", (err) => {
-  console.log(err);
-});
-db.once("open", () => {
-  console.log("Database connection Stablished");
-});
+db.on("error", (err) => {});
+db.once("open", () => {});
 module.exports = mongoose;

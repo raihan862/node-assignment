@@ -44,14 +44,11 @@ const AuthenticateSuperAdminRole = (req, res, next) => {
 // update/delete their own profile or the login user is an super user
 
 const AuthenticateSuperOrUser = (req, res, next) => {
-  console.log(req.body);
   const id = res.params?.id || req.body._id;
-  console.log(id);
+
   if (id == req.user._id || req.user.role == "super") {
-    console.log("come3");
     next();
   } else {
-    console.log("welcome");
     res.status(403).send("You Do Not Have Permission");
   }
 };
