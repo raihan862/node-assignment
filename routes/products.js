@@ -2,6 +2,32 @@ const express = require("express");
 const axios = require("axios");
 const router = express.Router();
 const Products = require("../Schemas/productSchema");
+const path = require("path")
+// const multer = require('multer')
+
+// const storage = multer.diskStorage({
+//   destination:(req,file,cb)=>{
+//     console.log("come");
+//     cb(new Error("new Ror"),'uploads/')
+//   },
+//   filename:(req,file,cb)=>{
+//     console.log("comeimg");
+//     cb(new Error("new Ror"),new Date().toLocaleTimeString()+file.originalname)
+//   }
+// })
+// const fileFilter= (req,file,cb)=>{
+//   console.log("1", req.body);
+//   if (file.mimetype === 'image/jpeg' || file.mimetype === 'image/png') {
+//     cb(null,true)
+//   }
+//   else{
+//     cb(new Error('Invalid Format'),false)
+//   }
+// }
+// const upload = multer({
+//   storage: storage,
+   
+// })
 const {
   AuthenticateToken,
   AuthenticateAdminRole,
@@ -32,9 +58,21 @@ router.post(
   "/add-product",
   AuthenticateToken,
   AuthenticateAdminRole,
+  
+  
   async (req, res) => {
     try {
-      const newProducts = new Products(req.body);
+     const file =req.files.file;
+      const filename =new Date().getTime() + file.name
+      file.mv(`uploads/${filename}`,err => {
+       if (err) {
+         res.status(500).send(err);
+         
+       }
+     })
+      const newProducts = new Products({
+        ...req.body,image:filename
+      });
       const response = await newProducts.save();
       res.status(200).json(response);
     } catch (err) {
