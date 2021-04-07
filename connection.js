@@ -10,7 +10,9 @@ mongoose
     useCreateIndex: true,
     useFindAndModify: false,
   })
-  .catch((err) => {});
+  .catch((err) => {
+    console.log(err);
+  });
 
 const db = mongoose.connection;
 
